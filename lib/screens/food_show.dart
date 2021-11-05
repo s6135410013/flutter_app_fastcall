@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_fastcall/models/fooddata.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FoodShow extends StatefulWidget {
   //สร้างตัวแปรที่เก็บค่าจากค่าที่ส่งมาหน้าFoodList
@@ -9,6 +10,7 @@ class FoodShow extends StatefulWidget {
   String facebook = '';
   String mobile = '';
   String image = '';
+  String gps = '';
   //constructure รับค่าที่ส่งมาจากหน้าFoodList กำหนดให้ตัวแปรข้างบน
   FoodShow({
     Key? key,
@@ -17,6 +19,7 @@ class FoodShow extends StatefulWidget {
     required this.facebook,
     required this.mobile,
     required this.image,
+    required this.gps,
   }) : super(key: key);
 
   @override
@@ -24,6 +27,29 @@ class FoodShow extends StatefulWidget {
 }
 
 class _FoodShowState extends State<FoodShow> {
+  //methodเปิดเว็บด้วยbrowser
+  Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  //methodเปิดการโทรด้วยcallของsmart phone
+  Future<void> _makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +185,10 @@ class _FoodShowState extends State<FoodShow> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      //เปิดเว็บไซต์
+                      _launchInBrowser(widget.website);
+                    },
                     icon: Icon(FontAwesomeIcons.globeAsia),
                     label: Text(
                       " Website",
@@ -173,7 +202,9 @@ class _FoodShowState extends State<FoodShow> {
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      _makePhoneCall("tel:" + widget.mobile);
+                    },
                     icon: Icon(FontAwesomeIcons.phoneAlt),
                     label: Text(
                       " Call",
@@ -182,12 +213,14 @@ class _FoodShowState extends State<FoodShow> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.redAccent[400],
+                      primary: Colors.greenAccent[400],
                       fixedSize: Size(120, 50),
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      _launchInBrowser(widget.gps);
+                    },
                     icon: Icon(
                       FontAwesomeIcons.mapMarkedAlt,
                     ),
